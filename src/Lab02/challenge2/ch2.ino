@@ -7,7 +7,7 @@ const int CS_PIN = 12;
 const int DIN_PIN = 13;
 const int CLK_PIN = 14;
 
-#define PERIOD_TASK 125
+#define PERIOD_TASK 250
 unsigned long tick_last;
 byte rqtask, rqCount, preCount;
 byte sym_ix, tblink;
@@ -29,7 +29,7 @@ void setup()
     digitalWrite(CS_PIN, HIGH);
     MAX7219_init();
     // Variables and state initialize
-    tick_last = millis(); // for sceduler
+    tick_last = millis();
     rqtask = 0;
     rqCount = 0;
     preCount = 0;
@@ -72,7 +72,7 @@ void myschedule()
         return;
     if (tdiff < PERIOD_TASK)
         return;
-    //-----------------------------------
+    // schedule of task
     tick_last += PERIOD_TASK;
     rqtask = 1;
     preCount++;
@@ -85,49 +85,26 @@ void myschedule()
 
 void taskDrawBlock()
 {
-    int i;
-    byte en_pattern;
+    byte i, line;
 
-    switch (tblink)
+    line = tblink * 1;
+
+    i = 0;
+    while (i < line)
     {
-    case 0:
-        en_pattern = 0b00000000;
-        break;
-    case 1:
-        en_pattern = 0b00000001;
-        break;
-    case 2:
-        en_pattern = 0b00000011;
-        break;
-    case 3:
-        en_pattern = 0b00000111;
-        break;
-    case 4:
-        en_pattern = 0b00001111;
-        break;
-    case 5:
-        en_pattern = 0b00011111;
-        break;
-    case 6:
-        en_pattern = 0b00111111;
-        break;
-    case 7:
-        en_pattern = 0b01111111;
-        break;
-    default:
-        en_pattern = 0b11111111;
-        break;
+        MAX7219_write_reg(REG_DIGIT(i), pattern[sym_ix][8 - line + i]);
+        i++;
     }
 
-    for (i = 0; i < 8; i++)
+    while (i < 8)
     {
-        MAX7219_write_reg(REG_DIGIT(i), pattern[sym_ix][i] & en_pattern);
+        MAX7219_write_reg(REG_DIGIT(i), 0);
+        i++;
     }
 
     if (tblink < 8)
         tblink++;
 }
-
 void taskSelectSymbol()
 {
     sym_ix++;
