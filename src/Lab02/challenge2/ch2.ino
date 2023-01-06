@@ -7,7 +7,7 @@ const int CS_PIN = 12;
 const int DIN_PIN = 13;
 const int CLK_PIN = 14;
 
-#define PERIOD_TASK 250
+#define PERIOD_TASK 125
 unsigned long tick_last;
 byte rqtask, rqCount, preCount;
 byte sym_ix, tblink;
