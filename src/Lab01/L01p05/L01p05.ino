@@ -40,12 +40,12 @@ void myschedule()
 {
     unsigned long tnow, tdiff;
     tnow = millis();
-    Serial.println("---------------- injected ---------------");
-    Serial.print("tick_last: ");
-    Serial.println(tick_last);
-    Serial.print("tnow: ");
-    Serial.println(tnow);
-    Serial.println("------------------------------------");
+    // Serial.println("---------------- injected ---------------");
+    // Serial.print("tick_last: ");
+    // Serial.println(tick_last);
+    // Serial.print("tnow: ");
+    // Serial.println(tnow);
+    // Serial.println("------------------------------------");
     if (tnow > tick_last)
     {
         tdiff = tnow - tick_last;
