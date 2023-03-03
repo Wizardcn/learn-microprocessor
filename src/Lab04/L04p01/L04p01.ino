@@ -68,14 +68,14 @@ void readBH1750()
   while (Wire.available()) //
   {
     buff[i] = Wire.read(); // receive one byte
-    i++;
+    i++; // number of byte
   }
   Wire.endTransmission();
   if (i == 2)
   {
     rodata = buff[0] * 256 + buff[1];
     Serial.print(" Readout = ");
-    Serial.print(rodata, HEX);
+    Serial.print(rodata, HEX); // data is step of analog signal
     Serial.print("\n\r");
   }
   else
