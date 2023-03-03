@@ -1,6 +1,6 @@
 #include <Arduino.h>
-const int pingPin = 3; // Trig
-const int inPin = 1;   // Echo
+const int pingPin = 15; // Trig
+const int inPin = 13;   // Echo
 #define PERIOD_TASK 2000
 unsigned long tick_last;
 byte rqtask;
