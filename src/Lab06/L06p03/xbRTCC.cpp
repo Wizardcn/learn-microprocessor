@@ -110,11 +110,16 @@ void xbRTCC::SetAlarm(char en)
         mode = 0x1D;
         bAlarmEnable = 1;
         Wire.beginTransmission(DS3231address);
-        Wire.write(0x07);
-        Wire.write(0x00);
-        Wire.write(0x81);
-        Wire.write(0x81);
-        Wire.write(0x81);
+        Wire.write(0x07); // start address
+        // Wire.write(0x00); // 0x00000000
+        // Wire.write(0x81); // 0x10000001
+        // Wire.write(0x81); // 0x10000001
+        // Wire.write(0x81); // 0x10000001
+
+        Wire.write(0x80); // 0x10000000
+        Wire.write(0x80); // 0x10000000
+        Wire.write(0x80); // 0x10000000
+        Wire.write(0x80); // 0x10000000
         Wire.endTransmission();
         delay(2);
     }
