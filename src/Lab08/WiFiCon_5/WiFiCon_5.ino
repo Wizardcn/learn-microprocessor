@@ -9,7 +9,7 @@
 #define RTCC_ALARM_PIN 16
 xbUCI uci("check_get_sync_set_alarm_read_wifi_connect_");
 xbRTCC rtcc;
-xbWeb myw("SUPERMan_","SUPAWAT123","www.pandaworker.com", "620610230", "F8A12508");
+xbWeb myw("SUPERMan_","SUPAWAT123","www.pandaworker.com", "620610217", "F8A0B1B3");
 unsigned int rodata;
 //###############################################
 void service(void);
@@ -28,7 +28,7 @@ void setup()
     // Variables and state initialize -----------
     uci.initialize();
     Serial.println("# WiFi begin...");
-    myw.reconnect();
+    myw.reconnect(10);
     // End of setup -----------------------------
 }
 
@@ -83,15 +83,14 @@ void service(void)
         Serial.print(myw.status());
         break;
     case 2: //get time
-
-        res = myw.web_connect("cmd=rtcc");
-        if (res == 0) {
-            // local time
-            rtcc.GetTime();
-            rtcc.TimeToString();
-            Serial.print("# Now (Local) --> ");
-            Serial.print(rtcc.sTime);
-
+        if (uci.parameter == "local") {
+          rtcc.GetTime();
+          rtcc.TimeToString();
+          Serial.print("# Now (Local) --> ");
+          Serial.print(rtcc.sTime);
+        } else if (uci.parameter == "global") {
+          res = myw.web_connect("cmd=rtcc");
+          if (res = 0) {
             time = myw.parameter;
             time.replace(",", " ");
             time.trim();
@@ -100,28 +99,50 @@ void service(void)
             // global time
             Serial.print("\n# Now (Global) --> ");
             Serial.print(time);
-        } else
+          } else
             Serial.print("\n! error to fetch time on global rtcc");
             break;
+        } else {
+          res = myw.web_connect("cmd=rtcc");
+          if (res == 0) {
+              // local time
+              rtcc.GetTime();
+              rtcc.TimeToString();
+              Serial.print("# Now (Local) --> ");
+              Serial.print(rtcc.sTime);
+
+              time = myw.parameter;
+              time.replace(",", " ");
+              time.trim();
+              time = "20" + time;
+
+              // global time
+              Serial.print("\n# Now (Global) --> ");
+              Serial.print(time);
+          } else
+              Serial.print("\n! error to fetch time on global rtcc");
+              break;
+        }
         break;
     case 3: // sync
 
-        Serial.print("# Web connect, request to global rtcc to set local rtcc");
+        Serial.println("# Web connect, request to global rtcc to set local rtcc");
         res = myw.web_connect("cmd=rtcc");
         if (res == 0) {
-            Serial.print("\n\rResponse:  " + myw.response);
-            Serial.print("\n\rParameter: " + myw.parameter);
+            Serial.println("\rResponse:  " + myw.response);
+            Serial.println("\rParameter: " + myw.parameter);
 
             time = myw.parameter;
             time.replace(",", " ");
             time.trim();
             time = "20" + time;
 
+
             res = rtcc.SetTime(time);
             if (res == 0)
-                Serial.print("\n? Cannot process the time from server, Invalid format time");
+                Serial.println("\r? Cannot process the time from server, Invalid format time");
             else
-                Serial.print("\n#  Finished sync");             
+                Serial.println("\r  Finished sync");             
                 
             }
         else
@@ -155,16 +176,18 @@ void service(void)
         readBH1750();
         break;
     case 7: //wifi
+        
         if (WiFi.status() != WL_CONNECTED) {
             Serial.print("\n\r WiFi is not connected.!");
-            Serial.print("\n# wifi begin...");
-            myw.reconnect();
+            Serial.println("\n# wifi begin...");
+            myw.reconnect(10);
+
         } else if (WiFi.status() == WL_CONNECTED) {
           Serial.print("\n\r WiFi is connected.");
         }
         break;
     case 8: //connect 
-        Serial.print("# Web connect, for test");
+        Serial.println("# Web connect, for test");
         res = myw.web_connect("cmd=connect");
         if (res == 0) {
             Serial.print("\n\rResponse: " + myw.response);
@@ -196,6 +219,7 @@ void serveAlarm(void) {
     //Serial.println(str);
     
     res = myw.web_connect(str);
+
     if (res == 0) {
         Serial.print("\n\rResponse:  " + myw.response);
         Serial.print("\n\rParameter: " + myw.parameter);

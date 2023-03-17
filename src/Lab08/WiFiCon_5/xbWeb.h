@@ -6,7 +6,7 @@ class xbWeb
 {
 public:
     xbWeb(char *ssid, char *password, char *host, char *id, char *key);
-    void reconnect(void);
+    void reconnect(int attempt);
     void disconnect(void);
     int status(void);
     int web_connect(String query);
